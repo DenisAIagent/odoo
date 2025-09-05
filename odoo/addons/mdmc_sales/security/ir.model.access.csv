@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_order_sales,sale.order sales,sale.model_sale_order,mdmc_base.group_mdmc_sales,1,1,1,0
+access_sale_order_manager,sale.order manager,sale.model_sale_order,mdmc_base.group_mdmc_manager,1,1,1,1
+access_account_move_accounting,account.move accounting,account.model_account_move,mdmc_base.group_mdmc_accounting,1,1,1,1
+access_contract_contract_sales,contract.contract sales,contract.model_contract_contract,mdmc_base.group_mdmc_sales,1,1,1,0
+access_contract_contract_manager,contract.contract manager,contract.model_contract_contract,mdmc_base.group_mdmc_manager,1,1,1,1

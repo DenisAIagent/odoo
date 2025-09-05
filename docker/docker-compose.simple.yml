@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: mdmc_odoo
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: mdmc123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Odoo application
+  odoo:
+    image: odoo:17
+    depends_on:
+      - db
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=mdmc123
+      - POSTGRES_DB=mdmc_odoo
+    volumes:
+      - ../odoo/addons:/mnt/extra-addons:ro
+      - odoo_data:/var/lib/odoo
+    ports:
+      - "8069:8069"
+    command: ["odoo", "--database=mdmc_odoo", "--init=base", "--without-demo=all", "--dev=reload"]
+
+volumes:
+  postgres_data:
+  odoo_data:

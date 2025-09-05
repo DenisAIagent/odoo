@@ -1,0 +1,160 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mdmc_odoo}
+      POSTGRES_USER: ${DB_USER:-odoo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-odoo} -d ${DB_NAME:-mdmc_odoo}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mdmc_network
+
+  # Redis (pour queue_job OCA)
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - mdmc_network
+
+  # Odoo application
+  odoo:
+    image: odoo:17
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - HOST=${DB_HOST:-db}
+      - PORT=${DB_PORT:-5432}
+      - USER=${DB_USER:-odoo}
+      - PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME:-mdmc_odoo}
+    volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf:ro
+      - ../odoo/addons:/mnt/extra-addons:ro
+      - odoo_data:/var/lib/odoo
+      - odoo_logs:/var/log/odoo
+    ports:
+      - "8069:8069"
+    command: ["odoo", "--config=/etc/odoo/odoo.conf", "--database=${DB_NAME:-mdmc_odoo}"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mdmc_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.odoo.rule=Host(`${ODOO_DOMAIN}`)"
+      - "traefik.http.routers.odoo.tls=true"
+      - "traefik.http.routers.odoo.tls.certresolver=letsencrypt"
+      - "traefik.http.services.odoo.loadbalancer.server.port=8069"
+
+  # n8n pour intégrations
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - N8N_HOST=${N8N_DOMAIN}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${N8N_DOMAIN}
+      - GENERIC_TIMEZONE=Europe/Lisbon
+      - TZ=Europe/Lisbon
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ../n8n/workflows:/home/node/.n8n/workflows:ro
+    ports:
+      - "5678:5678"
+    networks:
+      - mdmc_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`${N8N_DOMAIN}`)"
+      - "traefik.http.routers.n8n.tls=true"
+      - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
+
+  # Traefik reverse proxy
+  traefik:
+    image: traefik:v3.0
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--global.checknewversion=false"
+      - "--global.sendanonymoususage=false"
+      - "--log.level=INFO"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_data:/acme.json
+    networks:
+      - mdmc_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  # SMTP pour emails de développement (remplacer par service externe en production)
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"  # Web UI
+    networks:
+      - mdmc_network
+    profiles:
+      - dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailhog.rule=Host(`mail.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.mailhog.tls=true"
+      - "traefik.http.routers.mailhog.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
+
+volumes:
+  postgres_data:
+  redis_data:
+  odoo_data:
+  odoo_logs:
+  n8n_data:
+  traefik_data:
+
+networks:
+  mdmc_network:
+    driver: bridge

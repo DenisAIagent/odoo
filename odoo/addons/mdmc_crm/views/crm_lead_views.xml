@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Vue Formulaire Lead étendue -->
+        <record id="view_crm_lead_form_mdmc" model="ir.ui.view">
+            <field name="name">crm.lead.form.mdmc</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                
+                <!-- Ajouter le score dans le button_box -->
+                <div name="button_box" position="inside">
+                    <button name="action_start_sequence" type="object" class="oe_stat_button" icon="fa-envelope-o" 
+                            attrs="{'invisible': [('x_sequence_step', '>', 0)]}" string="Démarrer Séquence"/>
+                    <button name="action_pause_sequence" type="object" class="oe_stat_button" icon="fa-pause" 
+                            attrs="{'invisible': ['|', ('x_sequence_step', '=', 0), ('x_sequence_paused', '=', True)]}" string="Pause"/>
+                    <button name="action_resume_sequence" type="object" class="oe_stat_button" icon="fa-play" 
+                            attrs="{'invisible': ['|', ('x_sequence_step', '=', 0), ('x_sequence_paused', '=', False)]}" string="Reprendre"/>
+                    
+                    <div class="oe_stat_button" name="lead_score_button">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="x_lead_score"/>
+                            </span>
+                            <span class="o_stat_text">Score Lead</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Onglet informations spécifiques MDMC -->
+                <notebook position="inside">
+                    <page string="Info Musique" name="music_info">
+                        <group>
+                            <group name="artist_info" string="Artiste/Label">
+                                <field name="x_artist_name"/>
+                                <field name="x_label"/>
+                                <field name="x_genre"/>
+                            </group>
+                            <group name="marketing_info" string="Marketing">
+                                <field name="x_budget_est"/>
+                                <field name="x_country_focus"/>
+                                <field name="x_services_interest" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        <group name="tracking_info" string="Tracking">
+                            <group>
+                                <field name="x_source_url"/>
+                                <field name="x_utm_campaign"/>
+                            </group>
+                            <group>
+                                <field name="x_utm_medium"/>
+                                <field name="x_utm_source"/>
+                            </group>
+                        </group>
+                    </page>
+                    
+                    <page string="Scoring &amp; Séquences" name="scoring">
+                        <group>
+                            <group name="score_info" string="Score Lead">
+                                <field name="x_lead_score" readonly="1"/>
+                                <field name="x_score_details" readonly="1" widget="text"/>
+                            </group>
+                            <group name="sequence_info" string="Séquence Email">
+                                <field name="x_sequence_step" readonly="1"/>
+                                <field name="x_sequence_last_sent" readonly="1"/>
+                                <field name="x_sequence_paused"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+
+            </field>
+        </record>
+
+        <!-- Vue Liste avec colonnes MDMC -->
+        <record id="view_crm_lead_tree_mdmc" model="ir.ui.view">
+            <field name="name">crm.lead.tree.mdmc</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
+            <field name="arch" type="xml">
+                <field name="partner_name" position="after">
+                    <field name="x_artist_name" optional="show"/>
+                    <field name="x_budget_est" optional="show" sum="Budget Total"/>
+                    <field name="x_lead_score" optional="show"/>
+                    <field name="x_services_interest" widget="many2many_tags" optional="hide"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Vue Kanban avec scoring -->
+        <record id="view_crm_lead_kanban_mdmc" model="ir.ui.view">
+            <field name="name">crm.lead.kanban.mdmc</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+            <field name="arch" type="xml">
+                
+                <!-- Ajout des champs nécessaires -->
+                <field name="user_id" position="after">
+                    <field name="x_lead_score"/>
+                    <field name="x_artist_name"/>
+                    <field name="x_budget_est"/>
+                    <field name="x_services_interest"/>
+                    <field name="x_sequence_step"/>
+                </field>
+
+                <!-- Modification du template -->
+                <div class="o_kanban_record_title" position="after">
+                    <div class="o_kanban_record_subtitle">
+                        <t t-if="record.x_artist_name.raw_value">
+                            <i class="fa fa-music"/> <field name="x_artist_name"/>
+                        </t>
+                        <t t-if="record.x_budget_est.raw_value">
+                            <br/><i class="fa fa-euro"/> <field name="x_budget_est"/> €/mois
+                        </t>
+                    </div>
+                </div>
+
+                <div class="oe_kanban_bottom_right" position="inside">
+                    <!-- Badge Score -->
+                    <span t-att-class="'badge badge-' + (record.x_lead_score.raw_value >= 70 and 'success' or record.x_lead_score.raw_value >= 40 and 'warning' or 'secondary')">
+                        Score: <t t-esc="record.x_lead_score.raw_value"/>
+                    </span>
+                    <!-- Badge Séquence -->
+                    <span t-if="record.x_sequence_step.raw_value > 0" class="badge badge-info">
+                        Seq: <t t-esc="record.x_sequence_step.raw_value"/>
+                    </span>
+                </div>
+
+            </field>
+        </record>
+
+        <!-- Vue recherche étendue -->
+        <record id="view_crm_lead_search_mdmc" model="ir.ui.view">
+            <field name="name">crm.lead.search.mdmc</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+            <field name="arch" type="xml">
+                
+                <field name="partner_name" position="after">
+                    <field name="x_artist_name" string="Nom d'Artiste"/>
+                    <field name="x_label" string="Label"/>
+                    <field name="x_genre" string="Genre"/>
+                </field>
+
+                <filter name="activities_overdue" position="after">
+                    <separator/>
+                    <filter string="Score Élevé (&gt;=70)" name="high_score" domain="[('x_lead_score', '&gt;=', 70)]"/>
+                    <filter string="Score Moyen (40-69)" name="medium_score" domain="[('x_lead_score', '&gt;=', 40), ('x_lead_score', '&lt;', 70)]"/>
+                    <filter string="Score Faible (&lt;40)" name="low_score" domain="[('x_lead_score', '&lt;', 40)]"/>
+                    <separator/>
+                    <filter string="En Séquence Email" name="in_sequence" domain="[('x_sequence_step', '&gt;', 0), ('x_sequence_paused', '=', False)]"/>
+                    <filter string="Séquence Pausée" name="paused_sequence" domain="[('x_sequence_paused', '=', True)]"/>
+                </filter>
+
+                <group expand="0" string="Group By" position="inside">
+                    <filter string="Genre Musical" name="group_genre" domain="[]" context="{'group_by': 'x_genre'}"/>
+                    <filter string="Budget" name="group_budget" domain="[]" context="{'group_by': 'x_budget_est'}"/>
+                    <filter string="Score" name="group_score" domain="[]" context="{'group_by': 'x_lead_score'}"/>
+                </group>
+
+            </field>
+        </record>
+
+        <!-- Action Leads MDMC avec ordre par score -->
+        <record id="action_mdmc_leads" model="ir.actions.act_window">
+            <field name="name">Leads MDMC</field>
+            <field name="res_model">crm.lead</field>
+            <field name="view_mode">kanban,tree,form,graph,pivot</field>
+            <field name="domain">[('type', '=', 'lead')]</field>
+            <field name="context">{
+                'default_type': 'lead',
+                'search_default_high_score': 1,
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez votre premier lead musical !
+                </p>
+                <p>
+                    Gérez vos prospects artistes et labels avec notre système de scoring automatique.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

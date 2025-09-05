@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Template de prospection J+3 -->
+        <record id="mail_template_prospection_j3" model="mail.template">
+            <field name="name">MDMC - Prospection J+3</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="subject">Avez-vous eu le temps de réfléchir à nos services ? 🎵</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; background-color: #f8f9fa; font-family: Arial, sans-serif;">
+                    <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: white;">
+                        <tr>
+                            <td style="padding: 30px 20px;">
+                                <h2 style="color: #333; margin-bottom: 20px;">Bonjour ${object.contact_name or object.name},</h2>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Je vous avais contacté(e) il y a quelques jours concernant votre stratégie marketing musical.
+                                </p>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Pour vous donner une idée concrète de nos résultats, voici quelques chiffres de nos derniers clients :
+                                </p>
+                                <ul style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    <li><strong>Artiste Pop indépendant</strong> : +500% de vues YouTube en 3 mois</li>
+                                    <li><strong>Label Hip-Hop</strong> : 2.5M de streams générés avec 800€ de budget</li>
+                                    <li><strong>Groupe Rock</strong> : 15K nouveaux fans TikTok en 6 semaines</li>
+                                </ul>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
+                                    Intéressé(e) par un échange de 15 minutes pour voir comment nous pourrions vous aider ?
+                                </p>
+                                <div style="text-align: center;">
+                                    <a href="https://calendly.com/mdmc-consultation" 
+                                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold;">
+                                        Réserver 15 min gratuites
+                                    </a>
+                                </div>
+                                <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">
+                                    Si vous ne souhaitez plus recevoir nos emails, 
+                                    <a href="/unsubscribe" style="color: #999;">cliquez ici</a>.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </field>
+            <field name="lang">${object.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Template de prospection J+7 -->
+        <record id="mail_template_prospection_j7" model="mail.template">
+            <field name="name">MDMC - Prospection J+7</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="subject">Dernière chance : Audit gratuit de votre stratégie musicale 🎯</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; background-color: #f8f9fa; font-family: Arial, sans-serif;">
+                    <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: white;">
+                        <tr>
+                            <td style="padding: 30px 20px;">
+                                <h2 style="color: #333; margin-bottom: 20px;">Bonjour ${object.contact_name or object.name},</h2>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    C'est mon dernier message concernant notre offre d'audit gratuit.
+                                </p>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Je comprends que vous soyez occupé(e), mais voici ce que vous pourriez manquer :
+                                </p>
+                                <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                    <h3 style="color: #667eea; margin-top: 0;">🎯 Audit GRATUIT incluant :</h3>
+                                    <ul style="color: #666; line-height: 1.8; margin: 0;">
+                                        <li>Analyse de votre présence actuelle (YouTube, Spotify, réseaux)</li>
+                                        <li>Stratégie personnalisée pour votre genre musical</li>
+                                        <li>Budget recommandé et ROI prévisionnel</li>
+                                        <li>3 actions concrètes à implémenter immédiatement</li>
+                                    </ul>
+                                </div>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    <strong>Valeur : 300€ - Offert uniquement cette semaine</strong>
+                                </p>
+                                <div style="text-align: center; margin: 30px 0;">
+                                    <a href="https://calendly.com/mdmc-audit-gratuit" 
+                                       style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                                        🎁 Réclamer mon audit gratuit
+                                    </a>
+                                </div>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 30px; text-align: center;">
+                                    ⏰ <strong>Offre limitée - Expire dans 48h</strong>
+                                </p>
+                                <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">
+                                    Si vous ne souhaitez plus recevoir nos emails, 
+                                    <a href="/unsubscribe" style="color: #999;">cliquez ici</a>.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </field>
+            <field name="lang">${object.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

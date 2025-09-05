@@ -1,0 +1,139 @@
+{
+  "name": "Meta Ads to MDMC Odoo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/act_{{ $env.META_AD_ACCOUNT_ID }}/insights",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "campaign_id,campaign_name,impressions,clicks,spend,video_thruplay_watched_actions,ctr,cpp"
+            },
+            {
+              "name": "date_preset",
+              "value": "yesterday"
+            },
+            {
+              "name": "level",
+              "value": "campaign"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $env.META_ACCESS_TOKEN }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Meta Ads Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Map Meta Ads data to MDMC format\nconst items = [];\nconst data = $json.data || [];\n\nfor (const campaign of data) {\n  // Extract campaign reference from name (should contain CMP-XXXXXX)\n  const campaignRef = campaign.campaign_name.match(/CMP-\\d{6}/);\n  \n  if (campaignRef) {\n    const kpiData = {\n      campaign_ref: campaignRef[0],\n      date: new Date().toISOString().split('T')[0], // Yesterday's date\n      platform: \"meta\",\n      impressions: parseInt(campaign.impressions) || 0,\n      views: parseInt(campaign.video_thruplay_watched_actions?.[0]?.value) || 0,\n      clicks: parseInt(campaign.clicks) || 0,\n      spend: parseFloat(campaign.spend) || 0,\n      ctr: parseFloat(campaign.ctr) || 0,\n      cpv: campaign.video_thruplay_watched_actions?.[0]?.value > 0 ? \n           parseFloat(campaign.spend) / parseInt(campaign.video_thruplay_watched_actions[0].value) : 0,\n      cpc: parseFloat(campaign.cpp) || 0\n    };\n    \n    items.push({ json: kpiData });\n  }\n}\n\nreturn items;"
+      },
+      "name": "Transform Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ODOO_URL }}/api/mdmc/v1/kpis/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.MDMC_API_KPI_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Send to MDMC Odoo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Meta Ads Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Meta Ads Data": {
+      "main": [
+        [
+          {
+            "node": "Transform Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data": {
+      "main": [
+        [
+          {
+            "node": "Send to MDMC Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "Europe/Lisbon"
+  },
+  "id": "meta_ads_to_odoo_workflow"
+}

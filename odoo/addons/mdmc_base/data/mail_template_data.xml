@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Template email de bienvenue -->
+        <record id="mail_template_welcome" model="mail.template">
+            <field name="name">MDMC - Bienvenue</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Bienvenue chez MDMC Music Ads ! 🎵</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; background-color: #f8f9fa; font-family: Arial, sans-serif;">
+                    <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: white;">
+                        <tr>
+                            <td style="padding: 40px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <h1 style="color: white; margin: 0; font-size: 32px;">MDMC Music Ads</h1>
+                                <p style="color: #f0f0f0; margin: 10px 0 0 0; font-size: 16px;">Votre agence marketing musical</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 30px 20px;">
+                                <h2 style="color: #333; margin-bottom: 20px;">Bonjour ${object.name},</h2>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Bienvenue chez MDMC Music Ads ! Nous sommes ravis de vous accompagner 
+                                    dans votre stratégie marketing musical.
+                                </p>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Notre équipe d'experts va vous aider à :
+                                </p>
+                                <ul style="color: #666; line-height: 1.6; margin-bottom: 30px;">
+                                    <li>Développer votre audience sur YouTube, Meta et TikTok</li>
+                                    <li>Optimiser vos campagnes publicitaires</li>
+                                    <li>Maximiser votre retour sur investissement</li>
+                                    <li>Analyser vos performances en temps réel</li>
+                                </ul>
+                                <div style="text-align: center; margin: 30px 0;">
+                                    <a href="${object.get_portal_url()}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold;">
+                                        Accéder à mon portail client
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px; text-align: center; background-color: #f8f9fa; color: #666; font-size: 12px;">
+                                <p style="margin: 0;">© 2025 MDMC Music Ads - Tous droits réservés</p>
+                                <p style="margin: 5px 0 0 0;">Contact: info@mdmcmusicads.com</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </field>
+            <field name="lang">${object.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Template de prospection séquence J0 -->
+        <record id="mail_template_prospection_j0" model="mail.template">
+            <field name="name">MDMC - Prospection J0</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="subject">Boostez votre musique sur les plateformes digitales 🚀</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; background-color: #f8f9fa; font-family: Arial, sans-serif;">
+                    <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: white;">
+                        <tr>
+                            <td style="padding: 30px 20px;">
+                                <h2 style="color: #333; margin-bottom: 20px;">Bonjour ${object.contact_name or object.name},</h2>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Vous cherchez à développer votre audience et vos streams ?
+                                </p>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    Chez MDMC Music Ads, nous aidons les artistes et labels indépendants à :
+                                </p>
+                                <ul style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    <li><strong>+300% de streams</strong> grâce à nos campagnes YouTube ciblées</li>
+                                    <li><strong>Audiences qualifiées</strong> sur Meta et TikTok</li>
+                                    <li><strong>ROI transparent</strong> avec reporting détaillé</li>
+                                </ul>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
+                                    Intéressé(e) par un audit gratuit de votre stratégie actuelle ?
+                                </p>
+                                <div style="text-align: center;">
+                                    <a href="mailto:contact@mdmcmusicads.com?subject=Audit gratuit - ${object.name}" 
+                                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold;">
+                                        Réserver mon audit gratuit
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </field>
+            <field name="lang">${object.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

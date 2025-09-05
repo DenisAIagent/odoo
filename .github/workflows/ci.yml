@@ -1,0 +1,205 @@
+name: MDMC Odoo CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  ODOO_VERSION: "17.0"
+  POSTGRES_VERSION: "15"
+
+jobs:
+  lint:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install flake8 black isort pylint-odoo
+
+      - name: Run Black (code formatting)
+        run: |
+          black --check --diff odoo/addons/
+
+      - name: Run isort (import sorting)
+        run: |
+          isort --check-only --diff odoo/addons/
+
+      - name: Run Flake8 (code style)
+        run: |
+          flake8 odoo/addons/ --max-line-length=88 --extend-ignore=E203,W503
+
+      - name: Run Pylint for Odoo
+        run: |
+          pylint --load-plugins=pylint_odoo -d all -e odoolint odoo/addons/
+
+  test:
+    name: Odoo Module Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-dev \
+            libpq-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            libldap2-dev \
+            libsasl2-dev \
+            libssl-dev \
+            libjpeg-dev \
+            zlib1g-dev
+
+      - name: Install OCA dependencies
+        run: |
+          pip install git+https://github.com/OCA/server-tools.git@${ODOO_VERSION}#egg=auditlog\&subdirectory=auditlog
+          pip install git+https://github.com/OCA/contract.git@${ODOO_VERSION}#egg=contract\&subdirectory=contract
+          pip install git+https://github.com/OCA/helpdesk.git@${ODOO_VERSION}#egg=helpdesk_mgmt\&subdirectory=helpdesk_mgmt
+
+      - name: Download Odoo
+        run: |
+          git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git
+          pip install -r odoo/requirements.txt
+
+      - name: Create test database
+        run: |
+          PGPASSWORD=postgres createdb -h localhost -U odoo -p 5432 test_mdmc
+
+      - name: Run Odoo Tests
+        run: |
+          python odoo/odoo-bin \
+            -d test_mdmc \
+            --test-enable \
+            --stop-after-init \
+            --addons-path=odoo/addons,odoo/addons/mdmc_base,odoo/addons/mdmc_crm,odoo/addons/mdmc_sales,odoo/addons/mdmc_campaigns \
+            -i mdmc_base,mdmc_crm,mdmc_sales,mdmc_campaigns \
+            --db_host=localhost \
+            --db_port=5432 \
+            --db_user=odoo \
+            --db_password=postgres
+        env:
+          ODOO_RC: /dev/null
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Bandit Security Scan
+        run: |
+          pip install bandit
+          bandit -r odoo/addons/ -f json -o bandit-report.json || true
+
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
+
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Odoo image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.odoo
+          push: true
+          tags: |
+            mdmc/odoo:${{ github.sha }}
+            mdmc/odoo:${{ github.ref == 'refs/heads/main' && 'latest' || 'develop' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          # Add your staging deployment script here
+          # e.g., kubectl apply -f k8s/staging/ or docker-compose up -d
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment..."
+          # Add your production deployment script here
+          
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    steps:
+      - name: Send notification
+        run: |
+          echo "CI/CD pipeline completed"
+          # Add notification logic (Slack, Teams, email, etc.)

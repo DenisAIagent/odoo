@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_crm_lead_sdr,crm.lead sdr,crm.model_crm_lead,mdmc_base.group_mdmc_sdr,1,1,1,0
+access_crm_lead_sales,crm.lead sales,crm.model_crm_lead,mdmc_base.group_mdmc_sales,1,1,1,0
+access_crm_lead_manager,crm.lead manager,crm.model_crm_lead,mdmc_base.group_mdmc_manager,1,1,1,1

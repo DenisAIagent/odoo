@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Plateformes publicitaires principales -->
+        <record id="platform_youtube" model="mdmc.platform">
+            <field name="name">YouTube Ads</field>
+            <field name="code">youtube</field>
+            <field name="sequence">10</field>
+            <field name="description">Publicité YouTube via Google Ads</field>
+            <field name="color">1</field>
+            <field name="api_enabled">True</field>
+            <field name="api_url">https://googleads.googleapis.com</field>
+            <field name="api_version">v14</field>
+        </record>
+
+        <record id="platform_meta" model="mdmc.platform">
+            <field name="name">Meta Ads</field>
+            <field name="code">meta</field>
+            <field name="sequence">20</field>
+            <field name="description">Facebook et Instagram Ads</field>
+            <field name="color">4</field>
+            <field name="api_enabled">True</field>
+            <field name="api_url">https://graph.facebook.com</field>
+            <field name="api_version">v18.0</field>
+        </record>
+
+        <record id="platform_tiktok" model="mdmc.platform">
+            <field name="name">TikTok Ads</field>
+            <field name="code">tiktok</field>
+            <field name="sequence">30</field>
+            <field name="description">TikTok for Business</field>
+            <field name="color">6</field>
+            <field name="api_enabled">True</field>
+            <field name="api_url">https://business-api.tiktok.com</field>
+            <field name="api_version">v1.3</field>
+        </record>
+
+        <record id="platform_spotify" model="mdmc.platform">
+            <field name="name">Spotify Ad Studio</field>
+            <field name="code">spotify</field>
+            <field name="sequence">40</field>
+            <field name="description">Spotify Audio Ads</field>
+            <field name="color">8</field>
+            <field name="api_enabled">False</field>
+        </record>
+
+        <record id="platform_twitter" model="mdmc.platform">
+            <field name="name">X Ads</field>
+            <field name="code">twitter</field>
+            <field name="sequence">50</field>
+            <field name="description">Twitter/X Advertising</field>
+            <field name="color">9</field>
+            <field name="api_enabled">True</field>
+            <field name="api_url">https://ads-api.twitter.com</field>
+            <field name="api_version">v11</field>
+        </record>
+
+    </data>
+</odoo>

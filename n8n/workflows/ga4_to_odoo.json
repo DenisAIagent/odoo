@@ -1,0 +1,136 @@
+{
+  "name": "GA4 to MDMC Odoo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://analyticsdata.googleapis.com/v1beta/properties/{{ $env.GA4_PROPERTY_ID }}:runReport",
+        "authentication": "serviceAccount",
+        "requestMethod": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\n  \"dateRanges\": [{\n    \"startDate\": \"yesterday\",\n    \"endDate\": \"yesterday\"\n  }],\n  \"dimensions\": [{\n    \"name\": \"customEvent:campaign_ref\"\n  }],\n  \"metrics\": [\n    {\"name\": \"totalUsers\"},\n    {\"name\": \"sessions\"},\n    {\"name\": \"bounceRate\"},\n    {\"name\": \"averageSessionDuration\"},\n    {\"name\": \"conversions\"}\n  ]\n}"
+      },
+      "name": "Get GA4 Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "google_service_account",
+          "name": "Google Service Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Map GA4 data to MDMC format\nconst items = [];\nconst rows = $json.rows || [];\n\nfor (const row of rows) {\n  const campaignRef = row.dimensionValues[0].value;\n  const metrics = row.metricValues;\n  \n  // Validate campaign reference format\n  if (campaignRef && campaignRef.match(/CMP-\\d{6}/)) {\n    const kpiData = {\n      campaign_ref: campaignRef,\n      date: new Date().toISOString().split('T')[0], // Yesterday's date\n      platform: \"other\", // GA4 is cross-platform\n      conversions: parseInt(metrics[4].value) || 0,\n      // Additional website metrics\n      sessions: parseInt(metrics[1].value) || 0,\n      users: parseInt(metrics[0].value) || 0,\n      bounce_rate: parseFloat(metrics[2].value) || 0,\n      avg_session_duration: parseFloat(metrics[3].value) || 0\n    };\n    \n    items.push({ json: kpiData });\n  }\n}\n\nreturn items;"
+      },
+      "name": "Transform Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ODOO_URL }}/api/mdmc/v1/kpis/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.MDMC_API_KPI_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Send to MDMC Odoo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get GA4 Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GA4 Data": {
+      "main": [
+        [
+          {
+            "node": "Transform Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data": {
+      "main": [
+        [
+          {
+            "node": "Send to MDMC Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "Europe/Lisbon"
+  },
+  "id": "ga4_to_odoo_workflow"
+}

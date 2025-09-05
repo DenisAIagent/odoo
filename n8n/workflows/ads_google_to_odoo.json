@@ -1,0 +1,213 @@
+{
+  "name": "Google Ads to MDMC Odoo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "resource": "report",
+        "reportType": "campaign",
+        "dateRange": "YESTERDAY",
+        "fields": [
+          "campaign.id",
+          "campaign.name",
+          "metrics.impressions",
+          "metrics.clicks",
+          "metrics.cost_micros",
+          "metrics.video_views",
+          "metrics.ctr",
+          "metrics.cost_per_conversion"
+        ]
+      },
+      "name": "Get Google Ads Data",
+      "type": "n8n-nodes-base.googleAds",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "googleAdsOAuth2Api": {
+          "id": "google_ads_credentials",
+          "name": "Google Ads API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Map Google Ads data to MDMC format\nconst items = [];\n\nfor (const item of $input.all()) {\n  const campaign = item.json;\n  \n  // Extract campaign reference from name (should contain CMP-XXXXXX)\n  const campaignRef = campaign.campaign.name.match(/CMP-\\d{6}/);\n  \n  if (campaignRef) {\n    const kpiData = {\n      campaign_ref: campaignRef[0],\n      date: new Date().toISOString().split('T')[0], // Yesterday's date\n      platform: \"youtube\",\n      impressions: parseInt(campaign.metrics.impressions) || 0,\n      views: parseInt(campaign.metrics.video_views) || 0,\n      clicks: parseInt(campaign.metrics.clicks) || 0,\n      spend: (parseInt(campaign.metrics.cost_micros) || 0) / 1000000, // Convert micros to euros\n      ctr: parseFloat(campaign.metrics.ctr) || 0,\n      cpv: campaign.metrics.video_views > 0 ? \n           ((parseInt(campaign.metrics.cost_micros) || 0) / 1000000) / parseInt(campaign.metrics.video_views) : 0,\n      cpc: parseFloat(campaign.metrics.cost_per_conversion) || 0\n    };\n    \n    items.push({ json: kpiData });\n  }\n}\n\nreturn items;"
+      },
+      "name": "Transform Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ODOO_URL }}/api/mdmc/v1/kpis/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.MDMC_API_KPI_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Send to MDMC Odoo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.success }}",
+              "operation": "equal",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "name": "Check Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "message": "Google Ads KPIs successfully sent to MDMC Odoo for campaign {{ $json.campaign_ref }}",
+        "level": "info"
+      },
+      "name": "Log Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "message": "Failed to send Google Ads KPIs to MDMC Odoo: {{ $json.error }}",
+        "level": "error"
+      },
+      "name": "Log Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Google Ads Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Google Ads Data": {
+      "main": [
+        [
+          {
+            "node": "Transform Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data": {
+      "main": [
+        [
+          {
+            "node": "Send to MDMC Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to MDMC Odoo": {
+      "main": [
+        [
+          {
+            "node": "Check Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Success": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "Europe/Lisbon"
+  },
+  "id": "google_ads_to_odoo_workflow"
+}

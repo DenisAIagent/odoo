@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Utilisateurs de démonstration -->
+        
+        <!-- SDR Demo -->
+        <record id="user_demo_sdr" model="res.users">
+            <field name="name">Marie Dubois (SDR)</field>
+            <field name="login">sdr@mdmc.demo</field>
+            <field name="password">demo123</field>
+            <field name="email">sdr@mdmc.demo</field>
+            <field name="tz">Europe/Lisbon</field>
+            <field name="groups_id" eval="[(6, 0, [ref('group_mdmc_sdr')])]"/>
+        </record>
+
+        <!-- Sales Demo -->
+        <record id="user_demo_sales" model="res.users">
+            <field name="name">Thomas Martin (Sales)</field>
+            <field name="login">sales@mdmc.demo</field>
+            <field name="password">demo123</field>
+            <field name="email">sales@mdmc.demo</field>
+            <field name="tz">Europe/Lisbon</field>
+            <field name="groups_id" eval="[(6, 0, [ref('group_mdmc_sales')])]"/>
+        </record>
+
+        <!-- Project Manager Demo -->
+        <record id="user_demo_pm" model="res.users">
+            <field name="name">Sophie Laurent (Chef de Projet)</field>
+            <field name="login">pm@mdmc.demo</field>
+            <field name="password">demo123</field>
+            <field name="email">pm@mdmc.demo</field>
+            <field name="tz">Europe/Lisbon</field>
+            <field name="groups_id" eval="[(6, 0, [ref('group_mdmc_project_manager')])]"/>
+        </record>
+
+        <!-- Support Demo -->
+        <record id="user_demo_support" model="res.users">
+            <field name="name">Julien Moreau (Support)</field>
+            <field name="login">support@mdmc.demo</field>
+            <field name="password">demo123</field>
+            <field name="email">support@mdmc.demo</field>
+            <field name="tz">Europe/Lisbon</field>
+            <field name="groups_id" eval="[(6, 0, [ref('group_mdmc_support')])]"/>
+        </record>
+
+        <!-- Manager Demo -->
+        <record id="user_demo_manager" model="res.users">
+            <field name="name">Alexandre Durand (Direction)</field>
+            <field name="login">manager@mdmc.demo</field>
+            <field name="password">demo123</field>
+            <field name="email">manager@mdmc.demo</field>
+            <field name="tz">Europe/Lisbon</field>
+            <field name="groups_id" eval="[(6, 0, [ref('group_mdmc_manager')])]"/>
+        </record>
+
+        <!-- Clients de démonstration -->
+        
+        <!-- Artiste indépendant -->
+        <record id="partner_demo_artist1" model="res.partner">
+            <field name="name">Luna Martinez</field>
+            <field name="email">luna.martinez@email.com</field>
+            <field name="phone">+33 6 12 34 56 78</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="is_artist" eval="True"/>
+            <field name="artist_name">Luna</field>
+            <field name="music_genre">pop</field>
+            <field name="marketing_consent" eval="True"/>
+            <field name="marketing_consent_date" eval="datetime.now()"/>
+            <field name="customer_rank">1</field>
+        </record>
+
+        <!-- Label indépendant -->
+        <record id="partner_demo_label1" model="res.partner">
+            <field name="name">Indie Sounds Records</field>
+            <field name="email">contact@indiesounds.com</field>
+            <field name="phone">+33 1 45 67 89 01</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="is_label" eval="True"/>
+            <field name="label_name">Indie Sounds Records</field>
+            <field name="marketing_consent" eval="True"/>
+            <field name="marketing_consent_date" eval="datetime.now()"/>
+            <field name="customer_rank">1</field>
+        </record>
+
+        <!-- Artiste international -->
+        <record id="partner_demo_artist2" model="res.partner">
+            <field name="name">Jake Williams</field>
+            <field name="email">jake.williams@email.com</field>
+            <field name="phone">+1 555 123 4567</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="is_artist" eval="True"/>
+            <field name="artist_name">J-Will</field>
+            <field name="music_genre">hip_hop</field>
+            <field name="marketing_consent" eval="True"/>
+            <field name="marketing_consent_date" eval="datetime.now()"/>
+            <field name="customer_rank">1</field>
+        </record>
+
+    </data>
+</odoo>

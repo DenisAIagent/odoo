@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Groupes utilisateurs MDMC -->
+        
+        <!-- SDR (Sales Development Representative) -->
+        <record id="group_mdmc_sdr" model="res.groups">
+            <field name="name">MDMC SDR</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="comment">Accès leads/opportunités en lecture, pas d'accès comptabilité</field>
+        </record>
+
+        <!-- Sales -->
+        <record id="group_mdmc_sales" model="res.groups">
+            <field name="name">MDMC Sales</field>
+            <field name="category_id" ref="base.module_category_sales"/>
+            <field name="comment">Accès ventes/factures en lecture, pas d'écriture comptabilité</field>
+            <field name="implied_ids" eval="[(4, ref('group_mdmc_sdr'))]"/>
+        </record>
+
+        <!-- Chef de projet -->
+        <record id="group_mdmc_project_manager" model="res.groups">
+            <field name="name">MDMC Chef de Projet</field>
+            <field name="category_id" ref="base.module_category_project"/>
+            <field name="comment">Accès campagnes/KPIs, pas d'accès comptabilité</field>
+        </record>
+
+        <!-- Support -->
+        <record id="group_mdmc_support" model="res.groups">
+            <field name="name">MDMC Support</field>
+            <field name="category_id" ref="base.module_category_services"/>
+            <field name="comment">Accès tickets de support uniquement</field>
+        </record>
+
+        <!-- Comptabilité -->
+        <record id="group_mdmc_accounting" model="res.groups">
+            <field name="name">MDMC Comptabilité</field>
+            <field name="category_id" ref="base.module_category_accounting_and_finance"/>
+            <field name="comment">Accès total comptabilité</field>
+            <field name="implied_ids" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_user'))]"/>
+        </record>
+
+        <!-- Direction -->
+        <record id="group_mdmc_manager" model="res.groups">
+            <field name="name">MDMC Direction</field>
+            <field name="category_id" ref="base.module_category_administration"/>
+            <field name="comment">Accès complet + dashboards</field>
+            <field name="implied_ids" eval="[
+                (4, ref('group_mdmc_sales')),
+                (4, ref('group_mdmc_project_manager')),
+                (4, ref('group_mdmc_support')),
+                (4, ref('group_mdmc_accounting')),
+                (4, ref('base.group_system'))
+            ]"/>
+        </record>
+
+        <!-- Admin technique -->
+        <record id="group_mdmc_admin" model="res.groups">
+            <field name="name">MDMC Admin Technique</field>
+            <field name="category_id" ref="base.module_category_administration"/>
+            <field name="comment">Administration technique complète</field>
+            <field name="implied_ids" eval="[
+                (4, ref('group_mdmc_manager')),
+                (4, ref('base.group_system'))
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

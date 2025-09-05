@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Cron job pour traiter les séquences d'emailing -->
+        <record id="cron_process_email_sequences" model="ir.cron">
+            <field name="name">MDMC: Traiter les séquences d'emailing</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_process_email_sequences()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="active">True</field>
+            <field name="nextcall" eval="datetime.now() + timedelta(hours=1)"/>
+        </record>
+
+        <!-- Cron job pour purger les leads inactifs (RGPD) -->
+        <record id="cron_purge_inactive_leads" model="ir.cron">
+            <field name="name">MDMC: Purger leads inactifs (RGPD)</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">
+# Purger les leads inactifs depuis plus de 24 mois (RGPD)
+cutoff_date = fields.Datetime.now() - timedelta(days=730)
+inactive_leads = model.search([
+    ('create_date', '&lt;', cutoff_date),
+    ('stage_id.is_won', '=', False),
+    ('activity_ids', '=', False),
+    ('message_ids', '=', False)
+])
+if inactive_leads:
+    inactive_leads.unlink()
+    env['auditlog.log'].create({
+        'name': f'RGPD: Purge de {len(inactive_leads)} leads inactifs',
+        'model_id': env.ref('crm.model_crm_lead').id,
+        'method': 'unlink',
+        'user_id': env.user.id,
+    })
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="active">True</field>
+            <field name="nextcall" eval="datetime.now() + timedelta(days=30)"/>
+        </record>
+
+    </data>
+</odoo>

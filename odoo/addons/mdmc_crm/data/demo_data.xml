@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Leads de démonstration -->
+        
+        <!-- Lead avec score élevé -->
+        <record id="lead_demo_high_score" model="crm.lead">
+            <field name="name">Lead Score Élevé - Artiste Pop</field>
+            <field name="contact_name">Sarah Johnson</field>
+            <field name="email_from">sarah.johnson@email.com</field>
+            <field name="phone">+33 6 12 34 56 78</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="x_artist_name">Sarah J</field>
+            <field name="x_genre">pop</field>
+            <field name="x_budget_est">3000</field>
+            <field name="x_country_focus" ref="base.fr"/>
+            <field name="x_services_interest" eval="[(6, 0, [ref('mdmc_base.platform_youtube'), ref('mdmc_base.platform_meta'), ref('mdmc_base.platform_tiktok')])]"/>
+            <field name="x_source_url">https://mdmc.com/contact</field>
+            <field name="x_utm_campaign">summer_2025</field>
+            <field name="x_utm_medium">organic</field>
+            <field name="x_utm_source">website</field>
+            <field name="user_id" ref="mdmc_base.user_demo_sdr"/>
+            <field name="team_id" ref="crm.crm_team_1"/>
+            <field name="stage_id" ref="stage_lead_qualified"/>
+        </record>
+
+        <!-- Lead avec score moyen -->
+        <record id="lead_demo_medium_score" model="crm.lead">
+            <field name="name">Lead Score Moyen - Label Hip-Hop</field>
+            <field name="contact_name">Marcus Williams</field>
+            <field name="email_from">marcus@urbansounds.com</field>
+            <field name="phone">+1 555 123 4567</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="x_label">Urban Sounds Records</field>
+            <field name="x_genre">hip_hop</field>
+            <field name="x_budget_est">1500</field>
+            <field name="x_country_focus" ref="base.us"/>
+            <field name="x_services_interest" eval="[(6, 0, [ref('mdmc_base.platform_youtube'), ref('mdmc_base.platform_meta')])]"/>
+            <field name="x_source_url">https://mdmc.com/landing/hiphop</field>
+            <field name="x_utm_campaign">hiphop_targeted</field>
+            <field name="x_utm_medium">social</field>
+            <field name="x_utm_source">facebook</field>
+            <field name="user_id" ref="mdmc_base.user_demo_sdr"/>
+            <field name="team_id" ref="crm.crm_team_1"/>
+            <field name="stage_id" ref="stage_lead_contacted"/>
+            <field name="x_sequence_step">2</field>
+            <field name="x_sequence_last_sent" eval="datetime.now() - timedelta(days=1)"/>
+        </record>
+
+        <!-- Lead avec score faible -->
+        <record id="lead_demo_low_score" model="crm.lead">
+            <field name="name">Lead Score Faible - Artiste Jazz</field>
+            <field name="contact_name">Claire Dubois</field>
+            <field name="email_from">claire.dubois@jazz.fr</field>
+            <field name="phone">+33 1 23 45 67 89</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="x_artist_name">Claire D</field>
+            <field name="x_genre">jazz</field>
+            <field name="x_budget_est">300</field>
+            <field name="x_country_focus" ref="base.fr"/>
+            <field name="x_services_interest" eval="[(6, 0, [ref('mdmc_base.platform_spotify')])]"/>
+            <field name="x_source_url">https://mdmc.com/contact</field>
+            <field name="user_id" ref="mdmc_base.user_demo_sdr"/>
+            <field name="team_id" ref="crm.crm_team_1"/>
+            <field name="stage_id" ref="stage_lead_new"/>
+        </record>
+
+        <!-- Lead international -->
+        <record id="lead_demo_international" model="crm.lead">
+            <field name="name">Lead International - Groupe Rock UK</field>
+            <field name="contact_name">James Miller</field>
+            <field name="email_from">james@rockmillennimals.co.uk</field>
+            <field name="phone">+44 20 7123 4567</field>
+            <field name="country_id" ref="base.gb"/>
+            <field name="x_artist_name">Rock Millennials</field>
+            <field name="x_genre">rock</field>
+            <field name="x_budget_est">2500</field>
+            <field name="x_country_focus" ref="base.gb"/>
+            <field name="x_services_interest" eval="[(6, 0, [ref('mdmc_base.platform_youtube'), ref('mdmc_base.platform_tiktok'), ref('mdmc_base.platform_twitter')])]"/>
+            <field name="x_source_url">https://mdmc.com/en/contact</field>
+            <field name="x_utm_campaign">uk_expansion</field>
+            <field name="x_utm_medium">google_ads</field>
+            <field name="x_utm_source">google</field>
+            <field name="user_id" ref="mdmc_base.user_demo_sales"/>
+            <field name="team_id" ref="crm.crm_team_1"/>
+            <field name="stage_id" ref="stage_lead_meeting"/>
+        </record>
+
+        <!-- Lead avec séquence terminée (devrait être converti) -->
+        <record id="lead_demo_ready_convert" model="crm.lead">
+            <field name="name">Lead Prêt Conversion - Artiste Electronic</field>
+            <field name="contact_name">Alex Thompson</field>
+            <field name="email_from">alex@electronbeats.com</field>
+            <field name="phone">+1 415 123 4567</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="x_artist_name">ElectronBeats</field>
+            <field name="x_genre">electronic</field>
+            <field name="x_budget_est">4000</field>
+            <field name="x_country_focus" ref="base.us"/>
+            <field name="x_services_interest" eval="[(6, 0, [ref('mdmc_base.platform_youtube'), ref('mdmc_base.platform_meta'), ref('mdmc_base.platform_tiktok')])]"/>
+            <field name="x_source_url">https://mdmc.com/landing/electronic</field>
+            <field name="x_utm_campaign">electronic_festival</field>
+            <field name="x_utm_medium">email</field>
+            <field name="x_utm_source">newsletter</field>
+            <field name="user_id" ref="mdmc_base.user_demo_sales"/>
+            <field name="team_id" ref="crm.crm_team_1"/>
+            <field name="stage_id" ref="stage_lead_proposal"/>
+            <field name="x_sequence_step">3</field>
+            <field name="x_sequence_last_sent" eval="datetime.now() - timedelta(days=5)"/>
+        </record>
+
+    </data>
+</odoo>

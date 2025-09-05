@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Catégorie de produits MDMC -->
+        <record id="product_category_mdmc_services" model="product.category">
+            <field name="name">Services MDMC</field>
+            <field name="parent_id" ref="product.product_category_all"/>
+        </record>
+
+        <!-- Honoraires d'agence - YouTube -->
+        <record id="product_agency_fee_youtube" model="product.template">
+            <field name="name">Honoraires Agence - YouTube Ads</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">200.0</field>
+            <field name="standard_price">50.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">agency_fee</field>
+            <field name="mdmc_platform_id" ref="mdmc_base.platform_youtube"/>
+            <field name="mdmc_recurring">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Gestion complète de vos campagnes YouTube Ads par notre équipe d'experts. Inclut : création, optimisation, reporting mensuel.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+        <!-- Honoraires d'agence - Meta -->
+        <record id="product_agency_fee_meta" model="product.template">
+            <field name="name">Honoraires Agence - Meta Ads</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">200.0</field>
+            <field name="standard_price">50.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">agency_fee</field>
+            <field name="mdmc_platform_id" ref="mdmc_base.platform_meta"/>
+            <field name="mdmc_recurring">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Gestion complète de vos campagnes Facebook et Instagram par notre équipe. Inclut : création, optimisation, reporting mensuel.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+        <!-- Honoraires d'agence - TikTok -->
+        <record id="product_agency_fee_tiktok" model="product.template">
+            <field name="name">Honoraires Agence - TikTok Ads</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">200.0</field>
+            <field name="standard_price">50.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">agency_fee</field>
+            <field name="mdmc_platform_id" ref="mdmc_base.platform_tiktok"/>
+            <field name="mdmc_recurring">True</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Gestion complète de vos campagnes TikTok Ads par notre équipe. Inclut : création, optimisation, reporting mensuel.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+        <!-- Produits budget média (déclaratifs) -->
+        <record id="product_media_budget_youtube" model="product.template">
+            <field name="name">[DÉCLARATIF] Budget Média YouTube</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">media_budget</field>
+            <field name="mdmc_platform_id" ref="mdmc_base.platform_youtube"/>
+            <field name="mdmc_recurring">False</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Budget média YouTube payé directement par le client aux plateformes. Montant déclaratif pour suivi des performances.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+        <record id="product_media_budget_meta" model="product.template">
+            <field name="name">[DÉCLARATIF] Budget Média Meta</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">media_budget</field>
+            <field name="mdmc_platform_id" ref="mdmc_base.platform_meta"/>
+            <field name="mdmc_recurring">False</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Budget média Facebook/Instagram payé directement par le client aux plateformes. Montant déclaratif pour suivi.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+        <record id="product_media_budget_tiktok" model="product.template">
+            <field name="name">[DÉCLARATIF] Budget Média TikTok</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">media_budget</field>
+            <field name="mdmc_platform_id" ref="mdmc_base.platform_tiktok"/>
+            <field name="mdmc_recurring">False</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Budget média TikTok payé directement par le client aux plateformes. Montant déclaratif pour suivi des performances.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+        <!-- Services ponctuels -->
+        <record id="product_audit_strategy" model="product.template">
+            <field name="name">Audit Stratégique Marketing Musical</field>
+            <field name="categ_id" ref="product_category_mdmc_services"/>
+            <field name="type">service</field>
+            <field name="list_price">300.0</field>
+            <field name="standard_price">100.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="mdmc_product_type">service</field>
+            <field name="mdmc_recurring">False</field>
+            <field name="invoice_policy">order</field>
+            <field name="description_sale">Audit complet de votre stratégie marketing actuelle avec recommandations personnalisées et plan d'action détaillé.</field>
+            <field name="taxes_id" eval="[]"/>
+        </record>
+
+    </data>
+</odoo>

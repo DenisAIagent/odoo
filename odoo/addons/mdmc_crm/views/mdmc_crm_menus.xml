@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Menu CRM MDMC -->
+        <menuitem id="menu_mdmc_crm"
+                  name="CRM"
+                  parent="mdmc_base.menu_mdmc_base_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_mdmc_leads"
+                  name="Leads"
+                  parent="menu_mdmc_crm"
+                  action="action_mdmc_leads"
+                  sequence="10"/>
+
+        <menuitem id="menu_mdmc_opportunities"
+                  name="Opportunités"
+                  parent="menu_mdmc_crm"
+                  action="crm.crm_lead_opportunities"
+                  sequence="20"/>
+
+        <menuitem id="menu_mdmc_customers"
+                  name="Clients"
+                  parent="menu_mdmc_crm"
+                  action="base.action_partner_customer_form"
+                  sequence="30"/>
+
+        <!-- Sous-menu Configuration CRM -->
+        <menuitem id="menu_mdmc_crm_config"
+                  name="Configuration CRM"
+                  parent="mdmc_base.menu_mdmc_configuration"
+                  sequence="20"/>
+
+        <menuitem id="menu_crm_stages"
+                  name="Étapes"
+                  parent="menu_mdmc_crm_config"
+                  action="crm.crm_stage_action"
+                  sequence="10"/>
+
+        <menuitem id="menu_crm_teams"
+                  name="Équipes Commerciales"
+                  parent="menu_mdmc_crm_config"
+                  action="crm.crm_team_action"
+                  sequence="20"/>
+
+        <menuitem id="menu_crm_lost_reasons"
+                  name="Raisons de Perte"
+                  parent="menu_mdmc_crm_config"
+                  action="crm.crm_lost_reason_action"
+                  sequence="30"/>
+
+    </data>
+</odoo>

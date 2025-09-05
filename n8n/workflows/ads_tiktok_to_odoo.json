@@ -1,0 +1,130 @@
+{
+  "name": "TikTok Ads to MDMC Odoo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "name": "Schedule Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://business-api.tiktok.com/open_api/v1.3/report/integrated/get/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Access-Token",
+              "value": "={{ $env.TIKTOK_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\n  \"advertiser_id\": \"{{ $env.TIKTOK_ADVERTISER_ID }}\",\n  \"report_type\": \"BASIC\",\n  \"dimensions\": [\"campaign_id\", \"campaign_name\"],\n  \"metrics\": [\"impressions\", \"clicks\", \"spend\", \"video_play_actions\", \"ctr\", \"cost_per_result\"],\n  \"data_level\": \"AUCTION_CAMPAIGN\",\n  \"start_date\": \"{{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}\",\n  \"end_date\": \"{{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}\"\n}"
+      },
+      "name": "Get TikTok Ads Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Map TikTok Ads data to MDMC format\nconst items = [];\nconst data = $json.data?.list || [];\n\nfor (const campaign of data) {\n  const dimensions = campaign.dimensions;\n  const metrics = campaign.metrics;\n  \n  // Extract campaign reference from name (should contain CMP-XXXXXX)\n  const campaignRef = dimensions.campaign_name.match(/CMP-\\d{6}/);\n  \n  if (campaignRef) {\n    const kpiData = {\n      campaign_ref: campaignRef[0],\n      date: new Date().toISOString().split('T')[0], // Yesterday's date\n      platform: \"tiktok\",\n      impressions: parseInt(metrics.impressions) || 0,\n      views: parseInt(metrics.video_play_actions) || 0,\n      clicks: parseInt(metrics.clicks) || 0,\n      spend: parseFloat(metrics.spend) || 0,\n      ctr: parseFloat(metrics.ctr) || 0,\n      cpv: metrics.video_play_actions > 0 ? \n           parseFloat(metrics.spend) / parseInt(metrics.video_play_actions) : 0,\n      cpc: parseFloat(metrics.cost_per_result) || 0\n    };\n    \n    items.push({ json: kpiData });\n  }\n}\n\nreturn items;"
+      },
+      "name": "Transform Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ODOO_URL }}/api/mdmc/v1/kpis/ingest",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.MDMC_API_KPI_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Send to MDMC Odoo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get TikTok Ads Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get TikTok Ads Data": {
+      "main": [
+        [
+          {
+            "node": "Transform Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Data": {
+      "main": [
+        [
+          {
+            "node": "Send to MDMC Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "Europe/Lisbon"
+  },
+  "id": "tiktok_ads_to_odoo_workflow"
+}

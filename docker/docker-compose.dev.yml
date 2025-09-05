@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mdmc_odoo}
+      POSTGRES_USER: ${DB_USER:-odoo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-odoo} -d ${DB_NAME:-mdmc_odoo}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mdmc_network
+
+  # Redis (pour queue_job OCA)
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - mdmc_network
+
+  # Odoo application
+  odoo:
+    image: odoo:17
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - HOST=${DB_HOST:-db}
+      - PORT=${DB_PORT:-5432}
+      - USER=${DB_USER:-odoo}
+      - PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME:-mdmc_odoo}
+    volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf:ro
+      - ../odoo/addons:/mnt/extra-addons:ro
+      - odoo_data:/var/lib/odoo
+      - odoo_logs:/var/log/odoo
+    ports:
+      - "8069:8069"
+      - "8072:8072"  # longpolling
+    command: ["odoo", "--config=/etc/odoo/odoo.conf", "--database=${DB_NAME:-mdmc_odoo}", "--dev=reload,qweb,werkzeug,xml"]
+    networks:
+      - mdmc_network
+
+  # n8n pour intégrations
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - N8N_HOST=localhost
+      - N8N_PROTOCOL=http
+      - N8N_PORT=5678
+      - WEBHOOK_URL=http://localhost:5678
+      - GENERIC_TIMEZONE=Europe/Lisbon
+      - TZ=Europe/Lisbon
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ../n8n/workflows:/home/node/.n8n/workflows:ro
+    ports:
+      - "5678:5678"
+    networks:
+      - mdmc_network
+
+  # SMTP pour emails de développement
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
+    networks:
+      - mdmc_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  odoo_data:
+  odoo_logs:
+  n8n_data:
+
+networks:
+  mdmc_network:
+    driver: bridge

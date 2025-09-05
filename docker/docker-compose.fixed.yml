@@ -1,0 +1,33 @@
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: mdmc123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Odoo application
+  odoo:
+    image: odoo:17
+    depends_on:
+      - db
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=mdmc123
+    volumes:
+      - ../odoo/addons:/mnt/extra-addons:ro
+      - odoo_data:/var/lib/odoo
+    ports:
+      - "8069:8069"
+    # Lancement en mode normal sans --init pour laisser l'interface web gérer la création de DB
+    command: ["odoo", "--dev=reload"]
+
+volumes:
+  postgres_data:
+  odoo_data:

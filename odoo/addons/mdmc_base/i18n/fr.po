@@ -1,0 +1,138 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#   * mdmc_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: mdmc_base
+#: model:mdmc.platform,name:mdmc_base.platform_meta
+msgid "Meta Ads"
+msgstr "Meta Ads"
+
+#. module: mdmc_base
+#: model:mdmc.platform,name:mdmc_base.platform_spotify
+msgid "Spotify Ad Studio"
+msgstr "Spotify Ad Studio"
+
+#. module: mdmc_base
+#: model:mdmc.platform,name:mdmc_base.platform_tiktok
+msgid "TikTok Ads"
+msgstr "TikTok Ads"
+
+#. module: mdmc_base
+#: model:mdmc.platform,name:mdmc_base.platform_twitter
+msgid "X Ads"
+msgstr "X Ads"
+
+#. module: mdmc_base
+#: model:mdmc.platform,name:mdmc_base.platform_youtube
+msgid "YouTube Ads"
+msgstr "YouTube Ads"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__active
+msgid "Actif"
+msgstr "Actif"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__api_enabled
+msgid "API Activée"
+msgstr "API Activée"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__api_url
+msgid "URL API"
+msgstr "URL API"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__api_version
+msgid "Version API"
+msgstr "Version API"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__code
+msgid "Code"
+msgstr "Code"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__color
+msgid "Couleur"
+msgstr "Couleur"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__marketing_consent_date
+msgid "Date Consentement Marketing"
+msgstr "Date Consentement Marketing"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__gdpr_anonymized_date
+msgid "Date Anonymisation"
+msgstr "Date Anonymisation"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__description
+msgid "Description"
+msgstr "Description"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__is_artist
+msgid "Est un Artiste"
+msgstr "Est un Artiste"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__is_label
+msgid "Est un Label"
+msgstr "Est un Label"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__music_genre
+msgid "Genre Musical"
+msgstr "Genre Musical"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__name
+msgid "Nom"
+msgstr "Nom"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__artist_name
+msgid "Nom d'artiste"
+msgstr "Nom d'artiste"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__label_name
+msgid "Nom du label"
+msgstr "Nom du label"
+
+#. module: mdmc_base
+#: model:ir.actions.act_window,name:mdmc_base.action_mdmc_platform
+#: model:ir.ui.menu,name:mdmc_base.menu_mdmc_platform
+msgid "Plateformes"
+msgstr "Plateformes"
+
+#. module: mdmc_base
+#: model:ir.model,name:mdmc_base.model_mdmc_platform
+msgid "Plateformes Publicitaires"
+msgstr "Plateformes Publicitaires"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_mdmc_platform__sequence
+msgid "Séquence"
+msgstr "Séquence"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__marketing_consent
+msgid "Consentement Marketing"
+msgstr "Consentement Marketing"
+
+#. module: mdmc_base
+#: model:ir.model.fields,field_description:mdmc_base.field_res_partner__gdpr_anonymized
+msgid "Anonymisé RGPD"
+msgstr "Anonymisé RGPD"

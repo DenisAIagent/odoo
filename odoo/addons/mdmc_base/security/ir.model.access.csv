@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mdmc_platform_user,mdmc.platform user,model_mdmc_platform,base.group_user,1,0,0,0
+access_mdmc_platform_manager,mdmc.platform manager,model_mdmc_platform,group_mdmc_manager,1,1,1,1
+access_mdmc_platform_admin,mdmc.platform admin,model_mdmc_platform,group_mdmc_admin,1,1,1,1
