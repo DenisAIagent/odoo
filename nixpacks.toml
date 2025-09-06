@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ['python3', 'postgresql']
+
+[phases.build]
+cmds = ['echo "Building Odoo application"']
+
+[phases.install]
+cmds = [
+    'pip install --upgrade pip',
+    'pip install -r requirements.txt'
+]
+
+[start]
+cmd = 'python3 -m odoo --addons-path=./odoo/addons --database=$DATABASE_URL'
+
+[variables]
+PORT = '8069'

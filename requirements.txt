@@ -1,0 +1,7 @@
+# Odoo requirements for Railway deployment
+# Since we're using Docker images, this is a minimal setup
+# The actual Odoo installation will be handled by the Docker image
+
+# Basic Python dependencies
+psycopg2-binary==2.9.7
+requests==2.31.0
