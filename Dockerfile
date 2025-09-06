@@ -11,18 +11,14 @@ RUN apt-get update && apt-get install -y \
 # Copy custom addons
 COPY ./odoo/addons /mnt/extra-addons
 
-# Copy Railway-specific Odoo configuration (FIXED)
-COPY ./docker/odoo.railway.fixed.conf /etc/odoo/odoo.conf
-
 # Set proper permissions
 RUN chown -R odoo:odoo /mnt/extra-addons
-RUN chown odoo:odoo /etc/odoo/odoo.conf
 
-# Switch back to odoo user
+# Switch back to odoo user  
 USER odoo
 
 # Expose port
 EXPOSE 8069
 
-# Start command - Let Odoo handle DB creation via web interface
-CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
+# Start command - Simple approach without DB config
+CMD ["odoo", "--addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons", "--xmlrpc-port=8069", "--workers=0", "--log-level=info", "--list-db=True"]
