@@ -11,8 +11,8 @@ RUN apt-get update && apt-get install -y \
 # Copy custom addons
 COPY ./odoo/addons /mnt/extra-addons
 
-# Copy Railway-specific Odoo configuration
-COPY ./docker/odoo.railway.conf /etc/odoo/odoo.conf
+# Copy Railway-specific Odoo configuration (FIXED)
+COPY ./docker/odoo.railway.fixed.conf /etc/odoo/odoo.conf
 
 # Set proper permissions
 RUN chown -R odoo:odoo /mnt/extra-addons
