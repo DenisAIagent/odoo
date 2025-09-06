@@ -19,6 +19,16 @@ ODOO_ADMIN_PASSWORD=mdmc_admin_secure_2025
 PORT=8069
 ```
 
+### Configuration SMTP (Brevo)
+```
+SMTP_SERVER=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_SSL=False
+SMTP_USER=8b514e001@smtp-brevo.com
+SMTP_PASSWORD=<votre_mot_de_passe_brevo>
+SMTP_DEFAULT_FROM=noreply@mdmcmusicads.com
+```
+
 ### APIs (optionnel pour MVP)
 ```
 # Google Ads API

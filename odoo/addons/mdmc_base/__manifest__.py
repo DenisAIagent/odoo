@@ -26,6 +26,7 @@
         'data/platforms_data.xml',
         'data/mail_template_data.xml',
         'data/server_environment_data.xml',
+        'data/smtp_server_data.xml',
     ],
     'demo': [
         'data/demo_data.xml',

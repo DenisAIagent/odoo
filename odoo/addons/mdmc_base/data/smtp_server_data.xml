@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Configuration serveur SMTP Brevo pour MDMC -->
+        <record id="smtp_server_brevo" model="ir.mail_server">
+            <field name="name">Brevo SMTP</field>
+            <field name="smtp_host">smtp-relay.brevo.com</field>
+            <field name="smtp_port">587</field>
+            <field name="smtp_authentication">login</field>
+            <field name="smtp_user">8b514e001@smtp-brevo.com</field>
+            <field name="smtp_pass"></field> <!-- À configurer via l'interface ou variables d'environnement -->
+            <field name="smtp_encryption">starttls</field>
+            <field name="sequence">10</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Configuration email par défaut -->
+        <record id="base.default_from_email" model="ir.config_parameter">
+            <field name="key">mail.default.from</field>
+            <field name="value">noreply@mdmcmusicads.com</field>
+        </record>
+
+        <!-- Configuration bounce -->
+        <record id="base.bounce_email" model="ir.config_parameter">
+            <field name="key">mail.bounce.alias</field>
+            <field name="value">bounce@mdmcmusicads.com</field>
+        </record>
+        
+        <!-- Configuration catchall -->
+        <record id="base.catchall_email" model="ir.config_parameter">
+            <field name="key">mail.catchall.alias</field>
+            <field name="value">catchall@mdmcmusicads.com</field>
+        </record>
+    </data>
+</odoo>
