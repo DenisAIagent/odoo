@@ -13,7 +13,6 @@ exec odoo \
     --xmlrpc-port=8069 \
     --workers=0 \
     --log-level=info \
-    --list-db=True \
     --db_host="$DATABASE_HOST" \
     --db_port="$DATABASE_PORT" \
     --db_user="$DATABASE_USER" \
