@@ -24,5 +24,5 @@ USER odoo
 # Expose port
 EXPOSE 8069
 
-# Start command
-CMD ["odoo", "--config=/etc/odoo/odoo.conf", "--dev=reload"]
+# Start command - Let Odoo handle DB creation via web interface
+CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
